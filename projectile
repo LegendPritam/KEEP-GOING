@@ -1,0 +1,51 @@
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+public class projectile : MonoBehaviour
+{
+    [SerializeField]private float speed;
+    private float direction;
+    private bool hit;
+    private Animator anim;
+    private BoxCollider2D boxCoLLider;
+
+    private void Awake()
+    {
+        anim = GetComponent<Animator>();
+        boxCoLLider = GetComponent<BoxCollider2D>();
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
+        if (hit) return;
+        float moveMentspeed = speed * Time.deltaTime * direction;
+        transform.Translate (moveMentspeed, 0, 0);
+    }
+
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        hit = true;
+        boxCoLLider.enabled = false;
+        anim.SetTrigger("Explode");
+    }
+
+    public void SetDirection(float _direction)
+    {
+        direction = _direction;
+        gameObject.SetActive(true);
+        hit = false;
+        boxCoLLider.enabled = true;
+
+        float localScaleX = transform.localScale.x;
+        if (Mathf.Sign(localScaleX) != _direction)
+            localScaleX = -localScaleX;
+        transform.localScale = new Vector3(localScaleX, transform.localScale.y, transform.localScale.z);
+    }
+
+    private void Deactivate()
+    {
+        gameObject.SetActive(false);
+    }
+}
